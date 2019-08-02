@@ -6,7 +6,7 @@ function getQuery(query) {
   }, {});
 }
 
-const dogYearPrefix = {
+const dogYearSymbolOfSky = {
   0: "庚", //1970   0
   1: "壬", //1982   12
   2: "甲", //1994   24
@@ -14,6 +14,9 @@ const dogYearPrefix = {
   4: "戊", //2018   48
   5: "庚"
 };
+
+const dogYearSymbolOfEarth = "戌";
+
 const sky = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
 const earth = [
   "子",
@@ -33,19 +36,22 @@ const AD_1970 = 1970; //庚戌
 const range = (v1, v2) =>
   Array.from({ length: Math.abs(v2 - v1 + 1) }, (_, index) => v1 + index);
 const where = list => value => list.indexOf(value);
-function mapLunarYears(years, index) {
-  const dogYear = dogYearPrefix[index % 5];
-  const list = [];
-  let theDogYearIndexOfSky = where(sky)(dogYear);
-  let theDogYear = 10;
-  for (let year of [years]) {
-    list.push([year, `${sky[theDogYearIndexOfSky]}${earth[theDogYear]}`]);
-    theDogYearIndexOfSky += 1;
-    theDogYearIndexOfSky %= 10;
-    theDogYear += 1;
-    theDogYear %= 12;
-  }
-  return list;
+function mapLunarYears(skySymbols, earthSymbol) {
+  return function(years, index) {
+    const symbolOfSky = skySymbols[index % 5];
+    const list = [];
+    let symbolOfSkyIndex = where(sky)(symbolOfSky);
+    let symbolOfEarthIndex = where(earth)(earthSymbol);
+    for (let year of [years]) {
+      list.push([year, `${sky[symbolOfSkyIndex]}${earth[symbolOfEarthIndex]}`]);
+      symbolOfSkyIndex += 1;
+      symbolOfSkyIndex %= 10;
+      symbolOfEarthIndex += 1;
+      symbolOfEarthIndex %= 12;
+    }
+
+    return list;
+  };
 }
 
 const dedupe = (item, index, list) => {
@@ -66,10 +72,10 @@ const dedupe = (item, index, list) => {
   }
 };
 
-const getLunarYears = () => {
+const getLunarYearsOfDog = (dogYearSymbolOfSky, dogYearSymbolOfEarth) => {
   const groups = range(1070, 2030)
     .filter(year => (AD_1970 - year) % 12 === 0)
-    .map(mapLunarYears)
+    .map(mapLunarYears(dogYearSymbolOfSky, dogYearSymbolOfEarth))
     .reduce(function(acc, curr) {
       acc.push(...curr);
       return acc;
@@ -78,4 +84,4 @@ const getLunarYears = () => {
 
   console.log(groups);
 };
-getLunarYears();
+getLunarYearsOfDog(dogYearSymbolOfSky, dogYearSymbolOfEarth);
