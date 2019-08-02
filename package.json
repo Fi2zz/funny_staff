@@ -1,0 +1,12 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "node ./index.js"
+  },
+  "dependencies": {
+    "webpack": "^4.39.0"
+  }
+}
